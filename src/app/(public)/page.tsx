@@ -1,8 +1,9 @@
 import { CalendarDays, PackageOpen, Tent } from "lucide-react";
+import Link from "next/link";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { StatusBadge } from "@/components/dashboard/status-badge";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { money } from "@/lib/utils";
 
 export default function Home() {
   return (
-    <main className="mx-auto w-full max-w-7xl flex-1 space-y-12 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <Container className="space-y-12 py-16 sm:py-24">
       <section className="flex items-start justify-between gap-4">
         <div>
           <p className="font-medium text-primary">GearUp</p>
@@ -24,14 +25,15 @@ export default function Home() {
             securely.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button size="lg">Browse gear</Button>
-            <Button size="lg" variant="outline">
-              Become a provider
+            <Button asChild size="lg">
+              <Link href="/gear">Browse gear</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/register">Become a provider</Link>
             </Button>
             <Input className="max-w-56" placeholder="Search gear…" />
           </div>
         </div>
-        <ThemeToggle />
       </section>
 
       <section className="flex flex-wrap gap-2">
@@ -87,6 +89,6 @@ export default function Home() {
           </CardContent>
         </Card>
       </section>
-    </main>
+    </Container>
   );
 }
