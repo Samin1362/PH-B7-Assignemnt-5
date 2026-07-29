@@ -18,24 +18,20 @@ function withQuery(path: string, query?: Record<string, QueryValue>) {
     }
   }
   const suffix = search.toString();
-  const clean = path.startsWith("/") ? path : `/${path}`;
-  return `/api/backend${clean}${suffix ? `?${suffix}` : ""}`;
+  return `${path}${suffix ? `?${suffix}` : ""}`;
 }
 
-/**
- * Calls the GearUp API from the browser through the Next proxy, so the
- * JWT stays in an httpOnly cookie and no request is ever cross-origin.
- */
-export async function clientFetch<T>(
-  path: string,
-  { method = "GET", body, query, signal }: RequestOptions = {},
+async function request<T>(
+  url: string,
+  { method = "GET", body, signal }: Omit<RequestOptions, "query"> = {},
 ) {
   let response: Response;
   try {
-    response = await fetch(withQuery(path, query), {
+    response = await fetch(url, {
       method,
       signal,
-      headers: body === undefined ? undefined : { "Content-Type": "application/json" },
+      headers:
+        body === undefined ? undefined : { "Content-Type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } catch {
@@ -58,6 +54,18 @@ export async function clientFetch<T>(
   return payload;
 }
 
+/**
+ * Calls the GearUp API from the browser through the Next proxy, so the
+ * JWT stays in an httpOnly cookie and no request is ever cross-origin.
+ */
+export function clientFetch<T>(
+  path: string,
+  { query, ...options }: RequestOptions = {},
+) {
+  const clean = path.startsWith("/") ? path : `/${path}`;
+  return request<T>(withQuery(`/api/backend${clean}`, query), options);
+}
+
 /** Unwraps to `data` for the common case where `meta` is not needed. */
 export async function clientFetchData<T>(
   path: string,
@@ -65,4 +73,9 @@ export async function clientFetchData<T>(
 ) {
   const result = await clientFetch<T>(path, options);
   return result.data;
+}
+
+/** Calls this app's own route handlers (the auth routes that set cookies). */
+export function appPost<T>(path: string, body?: unknown) {
+  return request<T>(path, { method: "POST", body });
 }
