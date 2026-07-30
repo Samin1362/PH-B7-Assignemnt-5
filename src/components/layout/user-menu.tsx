@@ -14,16 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { roleHome } from "@/constants/routes";
 import { useLogout } from "@/hooks/use-session";
+import { initials } from "@/lib/utils";
 import type { User } from "@/types/api";
-
-function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 export function UserMenu({ user }: { user: User }) {
   const logout = useLogout();

@@ -18,6 +18,15 @@ export function money(value: string | number | null | undefined) {
   }).format(toNumber(value));
 }
 
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 export function formatDate(value: string | Date) {
   return format(new Date(value), "dd MMM yyyy");
 }
