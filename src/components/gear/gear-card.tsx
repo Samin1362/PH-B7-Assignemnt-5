@@ -73,9 +73,18 @@ export function GearCardSkeleton() {
   );
 }
 
-export function GearGridSkeleton({ count = 8 }: { count?: number }) {
+export const gearGridClass =
+  "grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+
+export function GearGridSkeleton({
+  count = 8,
+  className = gearGridClass,
+}: {
+  count?: number;
+  className?: string;
+}) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className={className}>
       {Array.from({ length: count }).map((_, index) => (
         <GearCardSkeleton key={index} />
       ))}
