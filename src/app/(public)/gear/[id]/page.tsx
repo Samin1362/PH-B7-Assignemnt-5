@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { GearCard, GearCardSkeleton } from "@/components/gear/gear-card";
 import { GearGallery } from "@/components/gear/gear-gallery";
 import { Container } from "@/components/layout/container";
+import { RentPanel } from "@/components/rental/rent-panel";
 import { RatingStars } from "@/components/review/rating-stars";
 import {
   ReviewSection,
@@ -16,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { serverFetch, serverFetchSafe } from "@/lib/api";
 import { toApiError } from "@/lib/api-error";
+import { getSession } from "@/lib/session";
 import { formatDate, initials, money } from "@/lib/utils";
 import type { GearItem, GearReviews } from "@/types/api";
 
@@ -164,7 +166,7 @@ export default async function GearDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const lookup = await loadGear(id);
+  const [lookup, session] = await Promise.all([loadGear(id), getSession()]);
 
   if (lookup.status === "missing") {
     notFound();
@@ -183,7 +185,6 @@ export default async function GearDetailPage({
   }
 
   const { gear } = lookup;
-  const soldOut = !gear.isAvailable || gear.stock < 1;
 
   return (
     <Container className="py-8 sm:py-12">
@@ -228,29 +229,7 @@ export default async function GearDetailPage({
             </Suspense>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <p className="text-3xl font-semibold tabular-nums">
-              {money(gear.pricePerDay)}
-              <span className="text-base font-normal text-muted-foreground">
-                {" "}
-                / day
-              </span>
-            </p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  soldOut
-                    ? "bg-tone-neutral text-tone-neutral-foreground"
-                    : "bg-tone-success text-tone-success-foreground"
-                }`}
-              >
-                {soldOut ? "Unavailable" : "Available"}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {gear.stock} in stock
-              </span>
-            </div>
-          </div>
+          <RentPanel gear={gear} role={session?.role ?? null} />
 
           {gear.description ? (
             <div className="space-y-2">
