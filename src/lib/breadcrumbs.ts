@@ -33,10 +33,18 @@ export function buildBreadcrumbs(pathname: string, role: UserRole): Crumb[] {
   );
 
   const crumbs: Crumb[] = [{ href: home, label: "Dashboard" }];
+  const segments = pathname.slice(base.length).split("/").filter(Boolean);
   let href = base;
 
-  for (const segment of pathname.slice(base.length).split("/").filter(Boolean)) {
+  segments.forEach((segment, index) => {
     href += `/${segment}`;
+
+    // `…/gear/<id>/edit` has no detail page behind the id, so the id would be
+    // a dead crumb — skip it and let "Edit" hang off the list instead.
+    if (isId(segment) && segments[index + 1] === "edit") {
+      return;
+    }
+
     crumbs.push({
       href,
       label:
@@ -44,7 +52,7 @@ export function buildBreadcrumbs(pathname: string, role: UserRole): Crumb[] {
         segmentLabels[segment] ??
         (isId(segment) ? "Details" : titleCase(segment)),
     });
-  }
+  });
 
   return crumbs;
 }
