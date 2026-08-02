@@ -1,6 +1,23 @@
 import { toNumber } from "@/lib/utils";
 import type { GearItem, RentalOrder } from "@/types/api";
 
+/**
+ * A provider sees whole orders, so split each one into the lines that are
+ * actually theirs and a count of everything else in the same booking.
+ */
+export function providerOrderView(order: RentalOrder, own: Set<string>) {
+  const ownItems = order.items.filter((item) => own.has(item.gearItemId));
+
+  return {
+    ownItems,
+    otherCount: order.items.length - ownItems.length,
+    ownSubtotal: ownItems.reduce(
+      (sum, item) => sum + toNumber(item.subtotal),
+      0,
+    ),
+  };
+}
+
 /** Orders that still need someone to act on them. */
 const activeStatuses = ["CONFIRMED", "PAID", "PICKED_UP"];
 const earnedStatuses = ["PAID", "PICKED_UP", "RETURNED"];
