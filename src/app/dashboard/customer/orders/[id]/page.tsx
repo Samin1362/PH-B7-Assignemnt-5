@@ -2,7 +2,6 @@ import { ArrowLeft, CreditCard, ServerCrash } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import {
   PaymentStatusBadge,
@@ -10,6 +9,7 @@ import {
 } from "@/components/dashboard/status-badge";
 import { CancelOrderButton } from "@/components/rental/cancel-order-button";
 import { OrderTimeline } from "@/components/rental/order-timeline";
+import { ReviewDialog } from "@/components/review/review-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,40 +18,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { rentalStatusMeta } from "@/constants/status";
-import { serverFetch } from "@/lib/api";
-import { toApiError } from "@/lib/api-error";
 import { orderRef } from "@/lib/orders";
+import { loadOrder } from "@/lib/rentals";
+import { loadMyReviews, reviewKey } from "@/lib/reviews";
+import { getSession } from "@/lib/session";
 import {
   daysBetween,
   formatDateTime,
   formatRentalDate,
   money,
 } from "@/lib/utils";
-import type { RentalOrder } from "@/types/api";
-
-type OrderLookup =
-  | { status: "ok"; order: RentalOrder }
-  | { status: "missing" }
-  | { status: "error" };
-
-/**
- * A malformed id is a 400 and someone else's order is a 403, and neither
- * should confirm that the order exists — so every 4xx becomes a 404.
- * Wrapped in `cache` so `generateMetadata` and the page body share one call:
- * awaiting it in the metadata is also what holds the response open long
- * enough for `notFound()` to still set a 404 status.
- */
-const loadOrder = cache(async (id: string): Promise<OrderLookup> => {
-  try {
-    const result = await serverFetch<RentalOrder>(`/rentals/${id}`);
-    return { status: "ok", order: result.data };
-  } catch (error) {
-    const { status } = toApiError(error);
-    return status >= 400 && status < 500
-      ? { status: "missing" }
-      : { status: "error" };
-  }
-});
 
 export async function generateMetadata({
   params,
@@ -102,6 +78,17 @@ export default async function OrderDetailPage({
 
   const { order } = lookup;
   const meta = rentalStatusMeta[order.status];
+
+  // Only a returned rental can be reviewed, so nothing else pays for the
+  // extra per-gear lookups that say which items are already done.
+  // `getSession()` is cached by the layout, so it costs nothing here.
+  const user = order.status === "RETURNED" ? await getSession() : null;
+  const reviewed = user
+    ? await loadMyReviews(
+        order.items.map((item) => item.gearItemId),
+        user.id,
+      )
+    : null;
   // Every item carries the days the server actually billed, so prefer it.
   const days = order.items[0]?.days ?? daysBetween(order.startDate, order.endDate);
 
@@ -171,9 +158,21 @@ export default async function OrderDetailPage({
                       {item.days} day{item.days === 1 ? "" : "s"}
                     </p>
                   </div>
-                  <p className="shrink-0 font-medium tabular-nums">
-                    {money(item.subtotal)}
-                  </p>
+                  <div className="flex shrink-0 flex-col items-end gap-2">
+                    <p className="font-medium tabular-nums">
+                      {money(item.subtotal)}
+                    </p>
+                    {reviewed ? (
+                      <ReviewDialog
+                        gearItemId={item.gearItemId}
+                        gearName={item.gearItem?.name ?? "this gear"}
+                        rentalOrderId={order.id}
+                        reviewed={reviewed.has(
+                          reviewKey(item.gearItemId, order.id),
+                        )}
+                      />
+                    ) : null}
+                  </div>
                 </div>
               ))}
 
