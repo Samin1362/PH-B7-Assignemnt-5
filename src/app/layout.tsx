@@ -16,10 +16,41 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "GearUp — Rent Sports & Outdoor Gear Instantly",
+  // Every relative OG/twitter image resolves against this, so it must be the
+  // deployed origin in production.
+  metadataBase: new URL(appUrl),
+  title: {
+    default: "GearUp — Rent Sports & Outdoor Gear Instantly",
+    template: "%s",
+  },
   description:
-    "Rent high-quality sports and outdoor equipment from trusted local providers.",
+    "Rent high-quality sports and outdoor equipment from trusted local providers. Browse gear, book by the day and pay securely with Stripe.",
+  applicationName: "GearUp",
+  keywords: [
+    "gear rental",
+    "outdoor equipment",
+    "camping gear",
+    "bike rental",
+    "sports equipment hire",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "GearUp",
+    url: appUrl,
+    title: "GearUp — Rent Sports & Outdoor Gear Instantly",
+    description:
+      "Browse gear from local providers, book by the day and pay securely with Stripe.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GearUp — Rent Sports & Outdoor Gear Instantly",
+    description:
+      "Browse gear from local providers, book by the day and pay securely with Stripe.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

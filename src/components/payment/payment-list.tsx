@@ -36,7 +36,7 @@ export function PaymentList({ payments }: { payments: Payment[] }) {
               <TableRow key={payment.id} className="hover:bg-muted/50">
                 <TableCell>
                   <Link
-                    href={`/dashboard/customer/orders/${payment.rentalOrderId}`}
+                    href={`/dashboard/customer/payments/${payment.id}`}
                     className="font-medium tabular-nums underline-offset-4 hover:underline"
                   >
                     {orderRef(payment.rentalOrderId)}
@@ -71,7 +71,7 @@ export function PaymentList({ payments }: { payments: Payment[] }) {
           >
             <div className="flex items-center justify-between gap-3">
               <Link
-                href={`/dashboard/customer/orders/${payment.rentalOrderId}`}
+                href={`/dashboard/customer/payments/${payment.id}`}
                 className="font-medium tabular-nums underline-offset-4 hover:underline"
               >
                 {orderRef(payment.rentalOrderId)}
