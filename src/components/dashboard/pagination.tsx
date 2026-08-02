@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 export function Pagination({
   page,
@@ -53,5 +54,30 @@ export function Pagination({
         </Button>
       </div>
     </div>
+  );
+}
+
+/** Pagination bound to the `page` search param, for server-rendered lists. */
+export function UrlPagination({
+  page,
+  limit,
+  total,
+}: {
+  page: number;
+  limit: number;
+  total: number;
+}) {
+  const { setParams } = useQueryParams();
+
+  return (
+    <Pagination
+      page={page}
+      limit={limit}
+      total={total}
+      onPageChange={(next) => {
+        setParams({ page: next > 1 ? next : null });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+    />
   );
 }
