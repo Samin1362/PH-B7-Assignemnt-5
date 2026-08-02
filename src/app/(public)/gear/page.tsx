@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { UrlPagination } from "@/components/dashboard/pagination";
 import { GearCard, GearGridSkeleton } from "@/components/gear/gear-card";
 import { GearFilterSidebar } from "@/components/gear/gear-filters";
 import type { GearFilterOptions } from "@/components/gear/gear-filters";
-import { GearPagination } from "@/components/gear/gear-pagination";
 import { GearToolbar } from "@/components/gear/gear-toolbar";
 import { Container, PageHeader } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ async function GearResults({ filters }: { filters: GearFilters }) {
         ))}
       </div>
 
-      <GearPagination
+      <UrlPagination
         page={result.meta?.page ?? filters.page}
         limit={result.meta?.limit ?? GEAR_PAGE_SIZE}
         total={total}

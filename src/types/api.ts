@@ -102,12 +102,6 @@ export type RentalItem = {
   gearItem?: GearSummary;
 };
 
-export type PaymentSummary = {
-  id: string;
-  status: PaymentStatus;
-  amount: string;
-};
-
 export type RentalOrder = {
   id: string;
   status: RentalStatus;
@@ -119,7 +113,8 @@ export type RentalOrder = {
   customerId: string;
   customer?: PersonSummary;
   items: RentalItem[];
-  payment?: PaymentSummary | null;
+  /** One-to-one in Prisma, so this is a single record and not a list. */
+  payment?: Payment | null;
 };
 
 export type OrderSummary = {
