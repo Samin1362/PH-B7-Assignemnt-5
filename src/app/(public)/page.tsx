@@ -226,7 +226,7 @@ export default function Home() {
             <h2 className="text-2xl font-semibold sm:text-3xl">
               Own gear that sits idle?
             </h2>
-            <p className="mt-2 max-w-xl opacity-90">
+            <p className="mt-2 max-w-xl">
               List it on GearUp, set your daily price and manage every booking
               from one dashboard.
             </p>

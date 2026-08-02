@@ -30,12 +30,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             ))}
           </ul>
         </div>
-        <p className="text-sm opacity-80">
+        <p className="text-sm">
           &copy; {new Date().getFullYear()} GearUp
         </p>
       </div>
 
-      <div className="flex items-center justify-center px-4 py-12 sm:px-8">
+      <main id="main" className="flex items-center justify-center px-4 py-12 sm:px-8">
         <div className="w-full max-w-md">
           <Link
             href="/"
@@ -45,7 +45,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           </Link>
           {children}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

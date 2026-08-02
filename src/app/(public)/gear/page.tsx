@@ -97,10 +97,10 @@ async function GearResults({ filters }: { filters: GearFilters }) {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">
+      <h2 className="text-sm font-normal text-muted-foreground">
         <span className="font-medium text-foreground tabular-nums">{total}</span>{" "}
         {total === 1 ? "item" : "items"} available
-      </p>
+      </h2>
 
       <div className={gridClass}>
         {result.data.map((gear, index) => (
