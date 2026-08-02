@@ -2,7 +2,6 @@ import { ArrowLeft, CreditCard, ServerCrash } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import {
   PaymentStatusBadge,
@@ -18,40 +17,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { rentalStatusMeta } from "@/constants/status";
-import { serverFetch } from "@/lib/api";
-import { toApiError } from "@/lib/api-error";
 import { orderRef } from "@/lib/orders";
+import { loadOrder } from "@/lib/rentals";
 import {
   daysBetween,
   formatDateTime,
   formatRentalDate,
   money,
 } from "@/lib/utils";
-import type { RentalOrder } from "@/types/api";
-
-type OrderLookup =
-  | { status: "ok"; order: RentalOrder }
-  | { status: "missing" }
-  | { status: "error" };
-
-/**
- * A malformed id is a 400 and someone else's order is a 403, and neither
- * should confirm that the order exists — so every 4xx becomes a 404.
- * Wrapped in `cache` so `generateMetadata` and the page body share one call:
- * awaiting it in the metadata is also what holds the response open long
- * enough for `notFound()` to still set a 404 status.
- */
-const loadOrder = cache(async (id: string): Promise<OrderLookup> => {
-  try {
-    const result = await serverFetch<RentalOrder>(`/rentals/${id}`);
-    return { status: "ok", order: result.data };
-  } catch (error) {
-    const { status } = toApiError(error);
-    return status >= 400 && status < 500
-      ? { status: "missing" }
-      : { status: "error" };
-  }
-});
 
 export async function generateMetadata({
   params,
