@@ -43,6 +43,28 @@ export function formatDateRange(start: string | Date, end: string | Date) {
   return `${formatDate(start)} — ${formatDate(end)}`;
 }
 
+/**
+ * Rental dates are calendar days stored as UTC midnight, so they must be read
+ * back from the UTC parts — formatting them locally shifts the day for anyone
+ * west of Greenwich.
+ */
+export function formatRentalDate(value: string | Date) {
+  const date = new Date(value);
+  return format(
+    new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+    "dd MMM yyyy",
+  );
+}
+
+export function formatRentalRange(start: string | Date, end: string | Date) {
+  return `${formatRentalDate(start)} — ${formatRentalDate(end)}`;
+}
+
+/** Sends the day the user actually picked, with no timezone shifting. */
+export function toDateOnly(date: Date) {
+  return format(date, "yyyy-MM-dd");
+}
+
 export function daysBetween(start: string | Date, end: string | Date) {
   return Math.max(1, differenceInCalendarDays(new Date(end), new Date(start)));
 }

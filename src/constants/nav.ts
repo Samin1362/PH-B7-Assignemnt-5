@@ -17,6 +17,9 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
+/** Read on the server so the sidebar renders collapsed without a flash. */
+export const sidebarCookie = "gearup_sidebar";
+
 export const publicNav = [
   { href: "/gear", label: "Browse gear" },
   { href: "/#how-it-works", label: "How it works" },
