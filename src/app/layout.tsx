@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
+import { NetworkStatus } from "@/components/layout/network-status";
 import { QueryProvider } from "@/components/layout/query-provider";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,6 +41,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>{children}</QueryProvider>
+          <NetworkStatus />
           <Toaster position="top-right" richColors closeButton />
         </ThemeProvider>
       </body>
